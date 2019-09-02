@@ -95,6 +95,7 @@
 	sudo systemctl enable hostapd
 	sudo systemctl start hostapd
 	sudo systemctl enable dnsmasq
+    sudo systemctl enable strongswan
 	
 > At this point, we should have an SSID being broadcast and DNS / DHCP services ready to go. You'll be able to connect to the SSID at this point but you won't have internet access.
 
