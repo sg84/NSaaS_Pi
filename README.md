@@ -60,7 +60,7 @@
 
 > Restart dnsmasq
 
-	sudo systemctl reload dnsmasq
+	sudo systemctl restart dnsmasq
 
 > Configure the wireless AP settings
 
