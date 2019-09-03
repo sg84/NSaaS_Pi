@@ -140,7 +140,7 @@
 
     sudo touch current_cron    
     sudo crontab -l | sudo tee current_cron
-    echo “*/30 * * * * ipsec stop; ipsec start" | sudo tee current_cron
+    echo "*/30 * * * * ipsec stop; ipsec start" | sudo tee current_cron
     sudo crontab current_cron
 
     
