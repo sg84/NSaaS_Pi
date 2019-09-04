@@ -35,6 +35,7 @@
     sudo nano /etc/sysctl.conf
     
 > Add the following lines to the end of the file
+
     net.ipv6.conf.all.disable_ipv6 = 1
     net.ipv6.conf.default.disable_ipv6 = 1
     net.ipv6.conf.lo.disable_ipv6 = 1
@@ -59,7 +60,7 @@
 
 > Restart dnsmasq
 
-	sudo systemctl reload dnsmasq
+	sudo systemctl restart dnsmasq
 
 > Configure the wireless AP settings
 
@@ -139,7 +140,7 @@
 
     sudo touch current_cron    
     sudo crontab -l | sudo tee current_cron
-    echo “*/30 * * * * ipsec stop; ipsec start" | sudo tee current_cron
+    echo "*/30 * * * * ipsec stop; ipsec start" | sudo tee current_cron
     sudo crontab current_cron
 
     
