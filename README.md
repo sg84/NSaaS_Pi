@@ -145,8 +145,14 @@
 
     
 > At this point, you'll need to have access to the NSaaS portal and have a site setup.
+
+![Screenshot of the Check Point CG Connect Portal](/assets/cp_portal.png)
+
 > Create your site and make a note of the name (IMPORTANT - make sure it's a unique name - the portal allows duplicates!), PSK and cloud gw address. Make sure the internal network matches the wifi DHCP range you've setup on the Pi.
 > In the portal - go to global settings and create an API key for NSaaS. Copy out the client ID and secret key, you'll need to add these to the Python script ip_update.
+
+![Screenshot of the Check Point CG Connect Portal](/assets/api_key_setup.png)
+
 > While you're here - go to the site you want to connect to and copy out the exact site name - you'll need this later.
 
 > Now you've got the keys, add them to the ip_update.py file and make sure everything in the #connection info section is completed.
@@ -169,8 +175,10 @@
     3. When site is updated - the IPSEC services are restarted and the VPN tunnel comes up.
     4. You can connect clients to the CheckPoint_NSaaS SSID and view the logs in the portal.
     
->> To verify IPSEC connectivity you can run
+> To verify IPSEC connectivity you can run
     
     sudo ipsec statusall
     
->> The output should show "Security Associations (1 up) and then INSTALLED shortly after.
+> The output should show something along the lines of "Security Associations (1 up) and then INSTALLED shortly after.
+
+![Screenshot of the Check Point CG Connect Portal](/assets/ipsec_status.png)
