@@ -4,7 +4,7 @@ import http.client, json
 API_ENDPOINT = "cloudinfra-gw.portal.checkpoint.com" # << Don't change this
 NSAAS_SITE_NAME = "EDIT ME" # << Your EXACT site name
 NSAAS_CLIENT_ID = "EDIT ME" # << Your NSaaS Client ID
-NSAAS_SECRET_KEY = "EDIT ME" # << Your NSaaS Access Key
+NSAAS_SECRET_KEY = "EDIT ME" # << Your NSaaS Secret Key
 
 # Request authorisation token
 
