@@ -121,7 +121,7 @@
 
     iptables-restore < /etc/iptables.ipsec_rules
     echo 1 > /proc/sys/net/ipv4/ip_no_pmtu_disc
-    ifconfig eth0 mtu 1400 up
+    ifconfig eth0 mtu 1500 up
     ipsec stop
     ipsec start
 
