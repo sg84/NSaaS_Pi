@@ -117,7 +117,7 @@
 
 	sudo iptables-save | sudo tee /etc/iptables.ipsec_rules
 	
-> Make sure these settings are loaded every time the Pi reboots. Also make sure PMTU discovery is disabled. Edit the file /etc/rc.local and these lines above 'exit 0':
+> Make sure these settings are loaded every time the Pi reboots. Also make sure PMTU discovery is disabled. If you experience problems with slow or incomplete connections, try lowering the MTU to 1480. Edit the file /etc/rc.local and these lines above 'exit 0':
 
     iptables-restore < /etc/iptables.ipsec_rules
     echo 1 > /proc/sys/net/ipv4/ip_no_pmtu_disc
