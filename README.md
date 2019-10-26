@@ -3,31 +3,32 @@
 
 > First up - enable the SSH server as on Raspbian as it's not enabled by default. 
 
-	sudo raspi-config.
+    sudo raspi-config
+    
 > Then choose the interfacing options and enable SSH server. If you don't have access to this, you can mount the SD card in another machine and add a file named 'ssh' in the /boot folder.
 
 > Connect wired ethernet, make sure you receive an IP address on eth0 and have internet access. Then update APT.
 
-	sudo apt update
+    sudo apt update
 
 > Install packages required. DNSmasq is a DNS forwarder and DHCP server. HostAP is a driver that allows the wireless card to run in HostAP mode. StrongSwan is an open-source IPsec solution.
 	
-	sudo apt install strongswan hostapd dnsmasq git
+    sudo apt install strongswan hostapd dnsmasq git
 
 > Stop the newly installed DNS and DHCP services as they're not configured yet.
 
-	sudo systemctl stop dnsmasq
-	sudo systemctl stop hostapd
+    sudo systemctl stop dnsmasq
+    sudo systemctl stop hostapd
 	
 > Configure the DHCP file and make a note of the range. This will be used later in the VPN configuration.
 	
-	sudo nano /etc/dhcpcd.conf
+    sudo nano /etc/dhcpcd.conf
 
 > Add the following to the end of the file to configure your wireless card
 
     interface wlan0
-	static ip_address=192.168.200.1/24
-	nohook wpa_supplicant
+    static ip_address=192.168.200.1/24
+    nohook wpa_supplicant
 
 > Disable IPv6 (otherwise this makes things complicated) and enable IP forwarding in the sysctl.conf file.
 
@@ -49,25 +50,28 @@
     
 > Restart the DHCP service
 
-	sudo service dhcpcd restart
+    sudo service dhcpcd restart
 	
 > Take a backup of the DNSmasq config and create a new one
 
-	sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
-	sudo nano /etc/dnsmasq.conf
+    sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
+    sudo nano /etc/dnsmasq.conf
 	
 > Add the following to the new /etc/dnsmasq.conf file
 
     interface=wlan0
     dhcp-range=192.168.200.2,192.168.200.100,24h
+    server=8.8.8.8
+    server=9.9.9.9
+    no-resolv
 
 > Restart dnsmasq
 
-	sudo systemctl restart dnsmasq
+    sudo systemctl restart dnsmasq
 
 > Configure the wireless AP settings
 
-	sudo nano /etc/hostapd/hostapd.conf
+    sudo nano /etc/hostapd/hostapd.conf
 
 > Add the following (you should be able to pick out the relevant parts to change for PSK and SSID values if you want to change yet)
 
@@ -90,7 +94,7 @@
 
 > Next, configure the OS to know that this is the config file to use for hostapd. Edit the file /etc/default/hostapd
 
-	sudo nano /etc/default/hostapd
+    sudo nano /etc/default/hostapd
 
 > Find the section starting #DAEMON_CONF. Add the line below:
 
@@ -98,23 +102,23 @@
 
 > Enable and start our new services
 
-	sudo systemctl unmask hostapd
-	sudo systemctl enable hostapd
-	sudo systemctl start hostapd
-	sudo systemctl enable dnsmasq
-        sudo systemctl enable strongswan
+    sudo systemctl unmask hostapd
+    sudo systemctl enable hostapd
+    sudo systemctl start hostapd
+    sudo systemctl enable dnsmasq
+    sudo systemctl enable strongswan
 	
 > At this point, we should have an SSID being broadcast and DNS / DHCP services ready to go. You'll be able to connect to the SSID at this point but you won't have internet access.
 
 
 > As we're using a VPN, we'll need to add a couple of rules to 'mangle' the MSS values.
 	
-	sudo iptables -t mangle -A FORWARD -m policy --pol ipsec --dir in -p tcp -m tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 1361:1536 -j TCPMSS --set-mss 1360
-	sudo iptables -t mangle -A FORWARD -m policy --pol ipsec --dir out -p tcp -m tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 1361:1536 -j TCPMSS --set-mss 1360
+    sudo iptables -t mangle -A FORWARD -m policy --pol ipsec --dir in -p tcp -m tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 1361:1536 -j TCPMSS --set-mss 1360
+    sudo iptables -t mangle -A FORWARD -m policy --pol ipsec --dir out -p tcp -m tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 1361:1536 -j TCPMSS --set-mss 1360
 
 > Save the IPtables policy
 
-	sudo iptables-save | sudo tee /etc/iptables.ipsec_rules
+    sudo iptables-save | sudo tee /etc/iptables.ipsec_rules
 	
 > Make sure these settings are loaded every time the Pi reboots. Also make sure PMTU discovery is disabled. If you experience problems with slow or incomplete connections, try lowering the MTU to 1480. Edit the file /etc/rc.local and add these lines above 'exit 0':
 
