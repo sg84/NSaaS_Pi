@@ -12,7 +12,7 @@
 
 > Install packages required. DNSmasq is a DNS forwarder and DHCP server. HostAP is a driver that allows the wireless card to run in HostAP mode. StrongSwan is an open-source IPsec solution.
 	
-	sudo apt install strongswan hostapd dnsmasq
+	sudo apt install strongswan hostapd dnsmasq git
 
 > Stop the newly installed DNS and DHCP services as they're not configured yet.
 
@@ -124,25 +124,18 @@
     ipsec stop
     ipsec start
 
-> That's the OS configured - now we can configure our IPsec settings. From the zip / GIT repo copy the files to the following locations:
-
-    60-trigger_api.sh -> /home/
-    ipsec.conf -> /etc/
-    ipsec.secrets -> /etc/
-    ip_update.py -> /home/
+> Clone the files from this repository ready to copy into place
+    
+    cd
+    git clone https://github.com/sg84/NSaaS_Pi.git
+    sudo cp NSaaS_Pi/ipsec.conf /etc/
+    sudo cp NSaaS_Pi/ipsec.secrets /etc/
+    
 
 > Create a DHCPCD exit hook to trigger the API update script anytime the ethernet port is replugged or ip is updated.
     
-    sudo cp /home/60-trigger_api.sh /etc/dhcpcd.exit-hook
+    sudo cp NSaaS_Pi/60-trigger_api.sh /etc/dhcpcd.exit-hook
     sudo chmod +x /etc/dhcpcd.exit-hook
-
-> Create a cronjob to restart the VPN every 30 mins (seems to be a stability issue with Strongswan - looking into this).
-
-    sudo touch current_cron    
-    sudo crontab -l | sudo tee current_cron
-    echo "*/30 * * * * ipsec stop; ipsec start" | sudo tee current_cron
-    sudo crontab current_cron
-
     
 > At this point, you'll need to have access to the NSaaS portal and have a site setup.
 
