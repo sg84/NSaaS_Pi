@@ -3,11 +3,10 @@
 
 > First up - enable the SSH server as on Raspbian as it's not enabled by default. 
 
-	sudo raspi-config. Then choose the option to enable SSH server.
+	sudo raspi-config.
+> Then choose the interfacing options and enable SSH server. If you don't have access to this, you can mount the SD card in another machine and add a file named 'ssh' in the /boot folder.
 
-> If you don't have access to this, you can mount the SD card in another machine and add a file named 'ssh' in the /boot folder.
-
-> Connect wired ethernet, make sure you receive an IP address on eth0 and have internet access. Then update APT
+> Connect wired ethernet, make sure you receive an IP address on eth0 and have internet access. Then update APT.
 
 	sudo apt update
 
@@ -30,7 +29,7 @@
 	static ip_address=192.168.200.1/24
 	nohook wpa_supplicant
 
-> Disable IPv6 (this makes things complicated)
+> Disable IPv6 (otherwise this makes things complicated) and enable IP forwarding in the sysctl.conf file.
 
     sudo nano /etc/sysctl.conf
     
@@ -39,8 +38,12 @@
     net.ipv6.conf.all.disable_ipv6 = 1
     net.ipv6.conf.default.disable_ipv6 = 1
     net.ipv6.conf.lo.disable_ipv6 = 1
+    
+> Enable IP forwarding, uncomment the line...
+	
+    net.ipv4.ip_forward=1
 
-> Make these changes active
+> Save the file and exit. Then make the changes active
 
     sudo sysctl -p
     
@@ -71,9 +74,12 @@
     interface=wlan0
     hw_mode=g
     driver=nl80211
+    ieee80211n=1
+    ht_capab=[HT40][SHORT-GI-20][DSSS_CCK-40]
+    country_code=GB
     ssid=CheckPoint_NSaaS
     channel=11
-    wmm_enabled=0
+    wmm_enabled=1
     macaddr_acl=0
     auth_algs=1
     ignore_broadcast_ssid=0
@@ -96,19 +102,12 @@
 	sudo systemctl enable hostapd
 	sudo systemctl start hostapd
 	sudo systemctl enable dnsmasq
-    sudo systemctl enable strongswan
+        sudo systemctl enable strongswan
 	
 > At this point, we should have an SSID being broadcast and DNS / DHCP services ready to go. You'll be able to connect to the SSID at this point but you won't have internet access.
 
-> Enable IP forwarding.
 
-	sudo nano /etc/sysctl.conf
-		
-> Uncomment the line
-	
-    net.ipv4.ip_forward=1
-
-> As we're using a VPN, we'll need to add a couple of rules to 'mangle' the MTU and MSS values.
+> As we're using a VPN, we'll need to add a couple of rules to 'mangle' the MSS values.
 	
 	sudo iptables -t mangle -A FORWARD -m policy --pol ipsec --dir in -p tcp -m tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 1361:1536 -j TCPMSS --set-mss 1360
 	sudo iptables -t mangle -A FORWARD -m policy --pol ipsec --dir out -p tcp -m tcp --tcp-flags SYN,RST SYN -m tcpmss --mss 1361:1536 -j TCPMSS --set-mss 1360
@@ -117,7 +116,7 @@
 
 	sudo iptables-save | sudo tee /etc/iptables.ipsec_rules
 	
-> Make sure these settings are loaded every time the Pi reboots. Also make sure PMTU discovery is disabled. If you experience problems with slow or incomplete connections, try lowering the MTU to 1480. Edit the file /etc/rc.local and these lines above 'exit 0':
+> Make sure these settings are loaded every time the Pi reboots. Also make sure PMTU discovery is disabled. If you experience problems with slow or incomplete connections, try lowering the MTU to 1480. Edit the file /etc/rc.local and add these lines above 'exit 0':
 
     iptables-restore < /etc/iptables.ipsec_rules
     echo 1 > /proc/sys/net/ipv4/ip_no_pmtu_disc
