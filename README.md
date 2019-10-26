@@ -132,6 +132,7 @@
     ip_update.py -> /home/
 
 > Create a DHCPCD exit hook to trigger the API update script anytime the ethernet port is replugged or ip is updated.
+    
     sudo cp /home/60-trigger_api.sh /etc/dhcpcd.exit-hook
     sudo chmod +x /etc/dhcpcd.exit-hook
 
