@@ -137,12 +137,12 @@
     sudo cp NSaaS_Pi/60-trigger_api.sh /etc/dhcpcd.exit-hook
     sudo chmod +x /etc/dhcpcd.exit-hook
     
-> At this point, you'll need to have access to the NSaaS portal and have a site setup.
+> At this point, you'll need to have access to the CloudGuard Connect portal and have a site setup.
 
 ![Screenshot of the Check Point CG Connect Portal](/assets/cp_portal.png)
 
 > Create your site and make a note of the name (IMPORTANT - make sure it's a unique name - the portal allows duplicates!), PSK and cloud gw address. Make sure the internal network matches the wifi DHCP range you've setup on the Pi.
-> In the portal - go to global settings and create an API key for NSaaS. Copy out the client ID and secret key, you'll need to add these to the Python script ip_update.
+> In the portal - go to global settings and create an API key for CG Connect. Copy out the client ID and secret key, you'll need to add these to the Python script ip_update.
 
 ![Screenshot of the Check Point CG Connect Portal](/assets/api_key_setup.png)
 
@@ -154,8 +154,8 @@
 > In local-connections, make sure leftsubnet and rightsubnet are set to be the network for the WIFI. This section prevents local traffic being forced over the VPN
 > In local-to-cgnsaas configure the following properties:
     
-    right= This should be the FQDN you get from the NSaaS portal that you connect TO. You're given two by NSaaS, pick the first one only. For this demo, we don't need two tunnels.
-    leftsubnet= This should be set to your local WIFI network (which will match what you configured for the network on the NSaaS side).
+    right= This should be the FQDN you get from the CG Conncet portal that you connect TO. You're given two by NSaaS, pick the first one only. For this demo, we don't need two tunnels.
+    leftsubnet= This should be set to your local WIFI network (which will match what you configured for the network on the CG Connect side).
 
 > Next, edit /etc/ipsec.secrets. This is the file that maps a site address / FQDN to a PSK. You'll want a line that looks like the below (but use the details from the portal for your site)...
 
