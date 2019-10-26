@@ -141,6 +141,11 @@
     sudo cp NSaaS_Pi/60-trigger_api.sh /etc/dhcpcd.exit-hook
     sudo chmod +x /etc/dhcpcd.exit-hook
     
+> Make sure the IPSec services are stopped with 'sudo ipsec stop'. Edit the file /etc/strongswan.d/charon/bypass-lan.conf and modify the last line to read 'load = yes'. This is something that has changed recently and if not changed will cause routing problems with traffic not being sent over the tunnel.
+
+    load = yes
+
+    
 > At this point, you'll need to have access to the CloudGuard Connect portal and have a site setup.
 
 ![Screenshot of the Check Point CG Connect Portal](/assets/cp_portal.png)
